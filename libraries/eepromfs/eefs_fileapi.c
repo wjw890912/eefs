@@ -354,7 +354,7 @@ int32 EEFS_LibCreatFile(EEFS_InodeTable_t *InodeTable, char *Filename, uint32 At
                             EEFS_LIB_EEPROM_FLUSH;
 
                             /* Initialize the File Descriptor */
-                            EEFS_FileDescriptorTable[FileDescriptor].Mode = (EEFS_FCREAT | EEFS_FWRITE);
+                            EEFS_FileDescriptorTable[FileDescriptor].Mode = (EEFS_FCREAT | EEFS_FWRITE | EEFS_FREAD);
                             EEFS_FileDescriptorTable[FileDescriptor].FileHeaderPointer = InodeTable->File[InodeIndex].FileHeaderPointer;
                             EEFS_FileDescriptorTable[FileDescriptor].FileDataPointer = InodeTable->File[InodeIndex].FileHeaderPointer + sizeof(EEFS_FileHeader_t);
                             EEFS_FileDescriptorTable[FileDescriptor].ByteOffset = 0;
@@ -490,7 +490,7 @@ int32 EEFS_LibRead(int32 FileDescriptor, void *Buffer, uint32 Length)
             
             if (EEFS_FileDescriptorTable[FileDescriptor].Mode & EEFS_FREAD) {
 
-                BytesToRead = EEFS_MIN((EEFS_FileDescriptorTable[FileDescriptor].FileSize - EEFS_FileDescriptorTable[FileDescriptor].ByteOffset), Length);
+                BytesToRead = EEFS_MAX((EEFS_FileDescriptorTable[FileDescriptor].FileSize - EEFS_FileDescriptorTable[FileDescriptor].ByteOffset), Length);
                 EEFS_LIB_EEPROM_READ(Buffer, EEFS_FileDescriptorTable[FileDescriptor].FileDataPointer, BytesToRead);
                 EEFS_FileDescriptorTable[FileDescriptor].FileDataPointer += BytesToRead;
                 EEFS_FileDescriptorTable[FileDescriptor].ByteOffset += BytesToRead;
